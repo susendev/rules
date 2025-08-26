@@ -1,4 +1,4 @@
 HOST,www.paypal-mktg.com,PayPal
-HOST-SUFFIX,account-paypal.info,PayPal
-HOST-SUFFIX,ciciai.com,ciciai
-HOST-SUFFIX,hahavending.com,hahavending
+DOMAIN-SUFFIX,account-paypal.info
+DOMAIN-SUFFIX,ciciai.com
+DOMAIN-SUFFIX,hahavending.com
