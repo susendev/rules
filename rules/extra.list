@@ -1,15 +1,2 @@
-HOST,www.paypal-mktg.com,PayPal
-DOMAIN-SUFFIX,account-paypal.info
 DOMAIN-SUFFIX,ciciai01.com
 DOMAIN-SUFFIX,ciciai.com
-
-DOMAIN,apple-relay.apple.com
-DOMAIN,apple-relay.cloudflare.com
-DOMAIN,apple-relay.fastly-edge.com
-DOMAIN,cp4.cloudflare.com
-DOMAIN,guzzoni.apple.com
-DOMAIN-SUFFIX,smoot.apple.com
-
-DOMAIN,mask.icloud.com
-DOMAIN,mask-h2.icloud.com
-DOMAIN,mask-api.icloud.com
