@@ -9,3 +9,12 @@ DOMAIN,gspe1-ssl.ls.apple.com
 DOMAIN,mask.icloud.com
 DOMAIN,mask-h2.icloud.com
 DOMAIN,mask-api.icloud.com
+
+DOMAIN,account.apple.com
+DOMAIN,appleid.cdn-apple.com
+DOMAIN,idmsa.apple.com
+DOMAIN,gsa.apple.com
+DOMAIN,gateway.icloud.com
+DOMAIN-SUFFIX,apple-cloudkit.com
+DOMAIN,app-site-association.cdn-apple.com
+DOMAIN,app-site-association.networking.apple
