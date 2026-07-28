@@ -2,19 +2,8 @@ DOMAIN,apple-relay.apple.com
 DOMAIN,apple-relay.cloudflare.com
 DOMAIN,apple-relay.fastly-edge.com
 DOMAIN,cp4.cloudflare.com
-DOMAIN,guzzoni.apple.com
-DOMAIN-SUFFIX,smoot.apple.com
+DOMAIN,apple-relay.mask.apple-dns.net
 DOMAIN,gspe1-ssl.ls.apple.com
 
-DOMAIN,mask.icloud.com
-DOMAIN,mask-h2.icloud.com
-DOMAIN,mask-api.icloud.com
-
-DOMAIN,account.apple.com
-DOMAIN,appleid.cdn-apple.com
-DOMAIN,idmsa.apple.com
-DOMAIN,gsa.apple.com
-DOMAIN,gateway.icloud.com
-DOMAIN-SUFFIX,apple-cloudkit.com
-DOMAIN,app-site-association.cdn-apple.com
-DOMAIN,app-site-association.networking.apple
+DOMAIN,guzzoni.apple.com
+DOMAIN-SUFFIX,smoot.apple.com
