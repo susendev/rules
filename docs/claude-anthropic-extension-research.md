@@ -1,36 +1,51 @@
 # Claude / Anthropic 扩展规则调研
 
+> 核对日期：2026-07-28。最终口径为“宁可错杀，不可遗漏”，允许共享基础设施、历史端点、IP 段和 ASN 被一并送入 `🤖 AI 服务`。
+
 ## 结论
 
-截至 2026-07-28，MetaCubeX 的 `anthropic.yaml` 已覆盖 Claude Web、Anthropic API、Console、Claude Code、Chrome Bridge、MCP 与用户内容域名中的绝大多数 Anthropic 自有域名，但并不完整：
+单独使用 MetaCubeX `anthropic.yaml` 不完整。它的 8 条规则能覆盖主要 Anthropic 自有域名，但缺少 `claude.app`、官方固定 IP、Claude Code 的部分更新/遥测主机、Office/第三方云依赖、MCP 根域和网站共享资源。
 
-- Claude Desktop 官方白名单已包含 `claude.app` / `*.claude.app`，上游尚未收录。
-- Claude Code 官方网络要求列出了两个可选 Datadog 遥测端点，上游无法通过 Anthropic 自有域名后缀覆盖。
-- Claude for Microsoft 365 官方文档列出了一个专用 Sentry 端点。
-- 当前 `claude.com` 页面使用一个 Claude 专属的 Sanity 项目 API 域名。
-- Blackmatrix7 的 Claude 专项规则长期收录 `cdn.usefathom.com`。
+当前组合改为四层：
 
-因此新增 `rules/claude-ext.list`，补充上游没有覆盖、且能确认与 Claude 相关的 6 条规则。配置仍以 MetaCubeX 为基础表，扩展表紧随其后，最后保留 ACL4SSR 的综合 AI 规则作为兜底。
+```ini
+ruleset=🤖 AI 服务,clash-domain:https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/anthropic.yaml
+ruleset=🤖 AI 服务,https://raw.githubusercontent.com/susendev/rules/refs/heads/master/rules/claude-ext.list
+ruleset=🤖 AI 服务,clash-classic:https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/refs/heads/main/rules/clash/anthropic.yaml
+ruleset=🤖 AI 服务,https://raw.githubusercontent.com/cutethotw/ClashRule/refs/heads/main/Rule/Claude.list
+ruleset=🤖 AI 服务,https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/AI.list
+```
+
+- MetaCubeX：维护精确的 Anthropic 自有域名基础表。
+- 本地 ext：补官方最新域名、共享依赖、网站资源与固定 IP。
+- VPSDance / cutethotw：补宽泛 SaaS、历史端点、Google 资源、IP/ASN 和关键词兜底。
+- ACL4SSR：继续提供 `DOMAIN-KEYWORD,anthropic|claude` 和综合 AI 兜底。
 
 ## 调研来源
 
 ### 官方来源
 
 - [Claude Code：Enterprise network configuration](https://code.claude.com/docs/en/network-config)
-- [Claude Code：Desktop application / Network access requirements](https://code.claude.com/docs/en/desktop#network-access-requirements)
+- [Claude Code Desktop：Network access requirements](https://code.claude.com/docs/en/desktop#network-access-requirements)
 - [Claude Code on the web：Default allowed domains](https://code.claude.com/docs/en/claude-code-on-the-web#default-allowed-domains)
-- [Claude for Microsoft 365：Use Claude for Microsoft 365 with third-party platforms](https://support.claude.com/en/articles/13945233-use-claude-for-microsoft-365-with-third-party-platforms)
-- `claude.com` 与 `anthropic.com` 的 2026-07-28 实时页面资源引用
+- [Claude Platform：官方入站/出站 IP 范围](https://platform.claude.com/docs/en/api/ip-addresses)
+- [Claude for Microsoft 365：Network allowlist](https://support.claude.com/en/articles/13945233-use-claude-for-microsoft-365-with-third-party-platforms)
+- [Model Context Protocol 官方文档](https://modelcontextprotocol.io)
+- `claude.com` 与 `anthropic.com` 的 2026-07-28 实时页面资源
 
-### GitHub 规则来源
+### GitHub 来源
 
-- [MetaCubeX / meta-rules-dat：anthropic.yaml](https://github.com/MetaCubeX/meta-rules-dat/blob/meta/geo/geosite/anthropic.yaml)
-- [Blackmatrix7 / ios_rule_script：Claude.list](https://github.com/blackmatrix7/ios_rule_script/blob/master/rule/Clash/Claude/Claude.list)
-- [V2Fly / domain-list-community：Anthropic / Claude 域名讨论](https://github.com/v2fly/domain-list-community/issues/2860)
+- [MetaCubeX：anthropic.yaml 固定快照](https://github.com/MetaCubeX/meta-rules-dat/blob/42c2a789e19516f0a8bb2bca8eb1541505599940/geo/geosite/anthropic.yaml)
+- [ACL4SSR：AI.list 固定快照](https://github.com/ACL4SSR/ACL4SSR/blob/4b461ca03b430c46d33b505cf4384e2f4f1be4b1/Clash/Ruleset/AI.list)
+- [Blackmatrix7：Claude.list](https://github.com/blackmatrix7/ios_rule_script/blob/master/rule/Clash/Claude/Claude.list)
+- [VPSDance：anthropic.yaml 固定快照](https://github.com/VPSDance/ai-proxy-rules/blob/e256f87e8522b829071a8c13c26a96819ca69703/rules/clash/anthropic.yaml)
+- [VPSDance：Anthropic 来源与人工补丁](https://github.com/VPSDance/ai-proxy-rules/blob/e256f87e8522b829071a8c13c26a96819ca69703/data/sources/anthropic.yaml)
+- [cutethotw：Claude.list 固定快照](https://github.com/cutethotw/ClashRule/blob/637fa05ff8c41bb8f4031f5db64bbea2e16aa1d6/Rule/Claude.list)
+- [MCP 官方 GitHub 组织](https://github.com/modelcontextprotocol)
 
-## 现有上游覆盖
+用户同时提供的 [Blackmatrix7 OpenAI.list](https://github.com/blackmatrix7/ios_rule_script/blob/master/rule/Clash/OpenAI/OpenAI.list) 属于 OpenAI 来源，已在 `docs/openai-claude-rules-research.md` 中处理。
 
-MetaCubeX 当前的 Anthropic domain provider 有 8 条：
+## MetaCubeX 已覆盖的 8 条
 
 ```yaml
 servd-anthropic-website.b-cdn.net
@@ -43,90 +58,103 @@ servd-anthropic-website.b-cdn.net
 +.claudeusercontent.com
 ```
 
-这些后缀已经覆盖：
+它们已经覆盖：
 
-| 官方域名或用途 | 上游匹配项 | 结果 |
-| --- | --- | --- |
-| `api.anthropic.com`、`a-api.anthropic.com` | `+.anthropic.com` | 已覆盖 |
-| `statsig.anthropic.com`、`assets-proxy.anthropic.com` | `+.anthropic.com` | 已覆盖 |
-| `claude.ai`、`downloads.claude.ai`、`assets.claude.ai` | `+.claude.ai` | 已覆盖 |
-| `*.livepreview.claude.ai` | `+.claude.ai` | 已覆盖 |
-| `claude.com`、`platform.claude.com`、`code.claude.com` | `+.claude.com` | 已覆盖 |
-| `mcp-proxy.anthropic.com` | `+.anthropic.com` | 已覆盖 |
-| `bridge.claudeusercontent.com`、用户内容与 Artifact | `+.claudeusercontent.com` | 已覆盖 |
-| Claude MCP client / content | 对应两个 `claudemcp*` 后缀 | 已覆盖 |
-| `servd-anthropic-website.b-cdn.net` | 精确规则 | 已覆盖 |
+- `api.anthropic.com`、`a-api.anthropic.com`、`assets-proxy.anthropic.com`
+- `claude.ai`、`downloads.claude.ai`、`assets.claude.ai`
+- `claude.com`、`platform.claude.com`、`code.claude.com`
+- `mcp-proxy.anthropic.com`
+- `bridge.claudeusercontent.com`、Artifact 和用户内容域名
+- Claude MCP client / content 域名
 
-因此不在扩展文件中重复这些规则。
-
-## 新增扩展规则
+## 本地 ext 的 22 条
 
 ```text
 DOMAIN-SUFFIX,claude.app
+DOMAIN-SUFFIX,anthropic.com.cn
+DOMAIN-SUFFIX,modelcontextprotocol.io
+DOMAIN-SUFFIX,sanity.io
 DOMAIN,4zrzovbb.api.sanity.io
+DOMAIN,cdn.prod.website-files.com
+DOMAIN,d3e54v103j8qbb.cloudfront.net
 DOMAIN,http-intake.logs.us5.datadoghq.com
 DOMAIN,browser-intake-us5-datadoghq.com
 DOMAIN,o1158394.ingest.us.sentry.io
 DOMAIN,cdn.usefathom.com
+DOMAIN,raw.githubusercontent.com
+DOMAIN,formulae.brew.sh
+DOMAIN,registry.npmjs.org
+DOMAIN,appsforoffice.microsoft.com
+DOMAIN,login.microsoftonline.com
+DOMAIN,accounts.google.com
+DOMAIN-SUFFIX,amazonaws.com
+DOMAIN-SUFFIX,googleapis.com
+DOMAIN-SUFFIX,services.ai.azure.com
+IP-CIDR,160.79.104.0/21,no-resolve
+IP-CIDR6,2607:6bc0::/48,no-resolve
 ```
 
-逐项依据：
+### 第一方与官方固定网络
 
-| 扩展规则 | 用途与依据 | 级别 |
-| --- | --- | --- |
-| `DOMAIN-SUFFIX,claude.app` | Claude Desktop 官方要求 `claude.app`、`*.claude.app`，并明确存在动态生成的 `*.livepreview.claude.app` | 官方、必补 |
-| `DOMAIN,4zrzovbb.api.sanity.io` | 2026-07-28 的 `claude.com` 页面直接引用该 Claude 专属 Sanity project API | 实时页面、精确项目域名 |
-| `DOMAIN,http-intake.logs.us5.datadoghq.com` | Claude Code 直接使用 Anthropic API 时的可选运行遥测 | 官方、可选流量 |
-| `DOMAIN,browser-intake-us5-datadoghq.com` | Claude Code 经灰度开关启用的可选错误报告 | 官方、可选流量 |
-| `DOMAIN,o1158394.ingest.us.sentry.io` | Claude for Microsoft 365 崩溃与错误报告 | 官方、可选流量 |
-| `DOMAIN,cdn.usefathom.com` | Blackmatrix7 Claude 专项规则收录的网站统计端点 | GitHub 社区补充、可选流量 |
+- `claude.app`：Claude Desktop 官方要求，并覆盖动态 `*.livepreview.claude.app`。
+- `160.79.104.0/21`：包含 Anthropic 官方入站 `/23`，同时等于官方出站 IPv4 范围。
+- `2607:6bc0::/48`：Anthropic 官方入站 IPv6 范围。
+- `anthropic.com.cn`：VPSDance 收录但当前不解析；按“不可遗漏”保留未来/历史覆盖。
 
-其中四个遥测/统计域名不是模型请求的必要条件，但纳入官方明确列出或 GitHub Claude 专项表长期维护的完整主机名，可以避免已知 Claude 相关请求落到 `🐟 漏网之鱼`。不使用 `DOMAIN-SUFFIX,datadoghq.com`、`DOMAIN-SUFFIX,sentry.io` 等更宽泛规则。
+### Claude Code 与 MCP
 
-## 共享域名的取舍
+- 两个 Datadog 主机：Claude Code 官方可选遥测和错误报告。
+- `raw.githubusercontent.com`：Release Notes。
+- `formulae.brew.sh`：Homebrew 版本检查。
+- `registry.npmjs.org`：npm / bun 安装 Claude Code 时使用的包注册表。
+- `modelcontextprotocol.io`：Anthropic 创建并已捐赠给 AAIF 的 MCP 官方文档和注册体系。
+- `storage.googleapis.com` 已被本地 `DOMAIN-SUFFIX,googleapis.com` 覆盖。
 
-Datadog 的区域 intake 主机和 `cdn.usefathom.com` 本身仍可能服务其它租户，Clash 的域名规则无法再按租户或 URL path 细分。考虑到本次要求是“尽可能完整不遗漏”，这里接受少量可选遥测流量也进入 `🤖 AI 服务` 的副作用：
+### Claude for Microsoft 365 与第三方云
 
-- 两个 Datadog 主机来自 Claude Code 当前官方网络要求。
-- Fathom 主机来自仍在发布的 Blackmatrix7 Claude 专项规则，但没有 Anthropic 官方归属证明，可信度低于其它 5 条。
-- 这些规则只匹配完整主机名，没有扩大到供应商的整个根域名。
+- Office / Entra：`appsforoffice.microsoft.com`、`login.microsoftonline.com`。
+- Amazon Bedrock：`DOMAIN-SUFFIX,amazonaws.com`，覆盖 STS 与区域 Bedrock Runtime。
+- Google Vertex AI：`accounts.google.com`、`DOMAIN-SUFFIX,googleapis.com`。
+- Azure Foundry：`DOMAIN-SUFFIX,services.ai.azure.com`。
+- 专用 Sentry：`o1158394.ingest.us.sentry.io`。
+- 用户自定义 LLM Gateway 无固定域名，无法预先穷举。
 
-如果未来更看重“只允许 Claude 专属域名”而不是“尽可能完整”，可以先移除 `cdn.usefathom.com`，再移除两个可选 Datadog 端点，不影响 Claude 的核心模型请求。
+### 网站和共享资源
 
-## 刻意不加入的高范围共享域名
+- 当前 `claude.com` 使用 Claude 专属 Sanity project host 及 Sanity CDN。
+- 当前 `anthropic.com` 使用 Webflow CDN 与 CloudFront 公共脚本。
+- Blackmatrix7 Claude 表收录 `cdn.usefathom.com`。
 
-以下域名确实出现在官方网络要求或实时页面中，但它们承载大量非 Claude 的核心下载、内容或平台流量，影响范围明显大于可选遥测主机：
+## VPSDance 与 cutethotw 的额外宽覆盖
 
-| 域名 | Claude 用途 | 不加入原因 |
-| --- | --- | --- |
-| `storage.googleapis.com` | 旧版安装/更新、插件元数据、Artifact 上传 | Google Cloud Storage 全局共享；现有 Google 规则可处理 |
-| `raw.githubusercontent.com` | Claude Code 更新后的 Release Notes | GitHub 全局共享；不应把所有 Raw 内容归入 AI |
-| `formulae.brew.sh` | Homebrew 版本检查 | Homebrew 全局共享 |
-| `appsforoffice.microsoft.com` | Microsoft 365 Office Runtime | Microsoft 全局共享；已有 Microsoft 策略组 |
-| `cdn.sanity.io`、`api.sanity.io` | `claude.com` 的 CMS 内容与图片 | Sanity 全局共享；仅收录 Claude 专属 project host |
-| `cdn.prod.website-files.com` | `anthropic.com` 的 Webflow 静态资源 | Webflow 全局共享 |
-| `d3e54v103j8qbb.cloudfront.net` | Webflow 公共脚本/CDN | 多网站共享 CloudFront 分发 |
-| Microsoft、AWS、Google Cloud、Azure 的第三方连接器域名 | 用户主动连接的数据源 | 应由对应服务策略处理，不属于 Claude 自有服务 |
+两张社区表继续补充：
 
-这些共享域名即使不进入 `🤖 AI 服务`，也会继续由后续 Google、Microsoft、国外服务或 `🐟 漏网之鱼` 策略处理，不会被拦截。
+- `anthropic.auth0.com`、`anthropic-com.ghost.io`、`anthropic.com.cdn.cloudflare.net`
+- GrowthBook、Intercom、Sentry、Statsig、Sift、Datadog 等共享服务
+- Google `gstatic.com` 静态资源与 `storage.googleapis.com`
+- Anthropic IPv4/IPv6、`IP-ASN,399358`
+- `DOMAIN-KEYWORD,anthropic|claude|datadog|sentry|sift`
 
-## 配置顺序
+VPSDance Anthropic YAML 是混合 Clash provider，使用 Subconverter 文档规定的 `clash-classic:` 类型。cutethotw 是普通 classical 文本表，沿用本项目现有的 URL 规则集读取方式。
 
-```ini
-ruleset=🤖 AI 服务,clash-domain:https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/anthropic.yaml
-ruleset=🤖 AI 服务,https://raw.githubusercontent.com/susendev/rules/refs/heads/master/rules/claude-ext.list
-ruleset=🤖 AI 服务,https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/AI.list
-```
+## “宁可错杀”的具体副作用
 
-顺序含义：
+- `DOMAIN-SUFFIX,amazonaws.com`、`googleapis.com`、`sanity.io` 会把大量非 Claude 流量送入 AI。
+- 社区表的 `sentry.io`、Intercom、Statsig、Auth0、ASN 和关键词规则也会匹配其它租户。
+- `raw.githubusercontent.com`、Homebrew、Office.js、Webflow、CloudFront 不是 Claude 专属服务。
+- cutethotw 与 VPSDance 存在大量重复规则，生成后的规则数量会增加。
 
-1. MetaCubeX 持续接收上游新增的 Anthropic 自有域名。
-2. 本仓库扩展表补上已确认但上游遗漏的精确规则。
-3. ACL4SSR 综合 AI 表处理其它 AI 服务和兼容性兜底。
+这些行为不是疏漏，而是用户明确选择覆盖优先后的已接受结果。
 
-## 完整性边界与维护建议
+## 完整性边界
 
-- 当前组合为 8 条上游 Anthropic provider 规则加 6 条本地扩展规则，并有 ACL4SSR AI 综合表兜底。
-- 这已经覆盖本次查询到的 Claude Web、Anthropic API、Console、Claude Desktop、Claude Code、Claude in Chrome、MCP、Microsoft 365、用户内容、下载与专用遥测端点。
-- 第三方云模型入口（Amazon Bedrock、Google Cloud、Microsoft Foundry）、用户自定义 `ANTHROPIC_BASE_URL`、任意 MCP 服务和 Claude 浏览器访问的目标网站不属于固定 Claude 域名，不能也不应由这份规则穷举。
-- Anthropic 会调整 CDN、遥测供应商与动态子域名，无法对未来域名作永久保证。后续复查优先比较 Claude Code 的两份官方网络白名单，再检查 MetaCubeX 和 Blackmatrix7 的更新。
+当前组合覆盖 Claude Web、API、Console、Desktop、Code、Chrome、MCP、Office、第三方云、下载、网站资源、遥测、官方 IP 与社区历史端点。
+
+仍然无法通过固定规则预先穷举：
+
+- 用户自定义 `ANTHROPIC_BASE_URL` 或 LLM Gateway
+- 用户自行配置的任意 MCP server
+- Claude 浏览器功能访问的任意目标网站
+- 未来新增或动态调整的域名、IP 与供应商
+
+维护时应先检查两份 Anthropic 官方网络白名单和 IP 页面，再比较 MetaCubeX、VPSDance、cutethotw 与 ACL4SSR 的最新提交。
