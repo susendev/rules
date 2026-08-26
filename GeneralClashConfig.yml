@@ -24,10 +24,7 @@ experimental:
   # interface-name: en0 # outbound interface name
 
 hosts:
-    gitlab.hahabianli.com: 8.149.247.211
-    jira.hahabianli.com: 8.149.247.211
-    confluence.hahabianli.com: 8.149.247.211
-    jenkins.hahabianli.com: 8.149.247.211
+   xx.xx.xx: 1.1.1.1
 
 dns:
   enable: true # 是否启用dns false
