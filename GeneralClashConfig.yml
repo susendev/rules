@@ -33,6 +33,8 @@ tun:
 
 dns:
   enable: true # 是否启用dns false
+  respect-rules: true # Mihomo
+  follow-rule: true # Stash
   ipv6: false
   listen: 0.0.0.0:53
   enhanced-mode: redir-host # 模式：redir-host或fake-ip
@@ -43,8 +45,7 @@ dns:
   default-nameserver:
     - tls://223.5.5.5:853
   nameserver:
-    - "https://dns.google/dns-query#♻️ 自动选择"
-    - "https://cloudflare-dns.com/dns-query#♻️ 自动选择"
+    - https://1.0.0.1/dns-query
   nameserver-policy:
     "geosite:cn": https://dns.alidns.com/dns-query
   # 使用直连 DoH 解析代理节点域名，避免循环依赖。
