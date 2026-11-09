@@ -1,0 +1,4 @@
+name: STUN 代理
+desc: 国内直连规则生效前先启用此覆写，并保持“包含所有网络”开启。
+rules:
+  - PROTOCOL,STUN,♻️ 自动选择
